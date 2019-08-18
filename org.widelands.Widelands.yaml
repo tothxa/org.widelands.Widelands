@@ -22,7 +22,7 @@ cleanup:
   - '*.la'
   - '*.a'
 modules:
-  - shared-modules/lua5.3/lua-5.3.2.json
+  - shared-modules/lua5.3/lua-5.3.5.json
   - shared-modules/glu/glu-9.0.0.json
   - shared-modules/glew/glew.json
 
@@ -36,6 +36,23 @@ modules:
       - type: archive
         url: https://dl.bintray.com/boostorg/release/1.68.0/source/boost_1_68_0.tar.bz2
         sha256: 7f6130bc3cf65f56a618888ce9d5ea704fa10b462be126ad053e80e553d6d8b7
+
+  - name: xmlstarlet
+    config-opts:
+      - --disable-static-libs
+      - --with-libxml-libs-prefix=/usr/lib
+      - --with-libxml-include-prefix=/usr/include/libxml2
+    sources:
+      - type: archive
+        url: http://downloads.sourceforge.net/xmlstar/xmlstarlet-1.6.1.tar.gz
+        sha256: 15d838c4f3375332fd95554619179b69e4ec91418a3a5296e7c631b7ed19e7ca
+      - type: shell
+        commands:
+          - cp -p /usr/share/automake-*/config.{sub,guess} .;
+          - autoreconf -vfi;
+    post-install:
+      - ln -s "xml" "${FLATPAK_DEST}/bin/xmlstarlet" ||:;
+    cleanup: ["*"]
 
   - name: Widelands
     buildsystem: cmake-ninja
@@ -52,24 +69,39 @@ modules:
       - -DGLEW_LIBRARY:FILEPATH=/app/lib/libGLEW.a
       - -DOPENGL_glu_LIBRARY=/app/lib/libGLU.a
       - -DOPTION_BUILD_WEBSITE_TOOLS=OFF
+    build-options:
+      ldflags: -lGL
     post-install:
-      - for s in {16,32,48,64,128}; do
-        install -p -D -m 0644 "../data/images/logos/wl-ico-${s}.png" "${FLATPAK_DEST}/share/icons/hicolor/${s}x${s}/apps/${FLATPAK_ID}.png";
-        done;
+      # https://bugs.launchpad.net/widelands/+bug/1807625
+      - |
+        for f in "../debian/org.widelands.widelands.desktop"; do
+          desktop-file-edit --set-key='X-Flatpak-RenamedFrom' --set-value="${FLATPAK_ID,,}.desktop;${FLATPAK_ID,,};" "${f}";
+          desktop-file-edit --set-key='Keywords' --set-value='Game;RTS;Real-time;Strategy;' "${f}";
+        done
+      # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
+      # https://bugs.launchpad.net/widelands/+bug/1807625
+      - |
+        for f in "../debian/widelands.appdata.xml"; do
+          xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
+          xmlstarlet ed --inplace -d '/component/icon' "${f}";
+          xmlstarlet ed --inplace -u '/component/id' -v "${FLATPAK_ID}" "${f}";
+          xmlstarlet ed --inplace -u '/component/launchable' -v "${FLATPAK_ID}.desktop" "${f}";
+          [[ "$( xmlstarlet sel -t -v "/component/provides/id='${FLATPAK_ID,,}.desktop'" "${f}" )" == 'true' ]] || xmlstarlet ed --inplace -s '/component/provides' -t elem -n 'id' -v "${FLATPAK_ID,,}.desktop" "${f}";
+          [[ "$( xmlstarlet sel -t -v "/component/provides/id='${FLATPAK_ID,,}'" "${f}" )" == 'true' ]] || xmlstarlet ed --inplace -s '/component/provides' -t elem -n 'id' -v "${FLATPAK_ID,,}" "${f}";
+        done
+      - |
+        for s in {16,32,48,64,128}; do
+          install -p -D -m 0644 "../data/images/logos/wl-ico-${s}.png" "${FLATPAK_DEST}/share/icons/hicolor/${s}x${s}/apps/${FLATPAK_ID}.png";
+        done
       - install -p -D -m 0644 "../debian/org.widelands.widelands.desktop" "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop"
       - install -p -D -m 0644 "../debian/widelands.appdata.xml" "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"
-    cleanup:
-      - /bin/wl_render_richtext
     sources:
       - type: archive
-        url: https://launchpad.net/widelands/build19/build19/+download/widelands-build19-src-gcc7.tar.bz2
-        sha256: ef73b8cf5a7c680bad5caade907f1cc6ee88dd3729470b9214a3c72658585458
-      - type: file
-        path: widelands.appdata.xml
-        dest: debian
-      # https://bugs.launchpad.net/widelands/+bug/1760581
+        url: https://launchpad.net/widelands/build20/build20/+download/widelands-build20.tar.bz2
+        sha256: 38594d98c74f357d4c31dd8ee2b056bfe921f42935935af915d11b792677bcb2
       - type: patch
-        path: widelands-build19-icu-bidi.patch
-      # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
+        path: widelands-build20-gcc.patch
+      # https://bugs.launchpad.net/widelands/+bug/1836107
+      # undefined reference to `glReadPixels'
       - type: patch
-        path: widelands-build19-appdata-vercmp.patch
+        path: widelands-build20-gl.patch

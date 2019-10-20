@@ -1,0 +1,349 @@
+diff -Naur widelands-build20.orig/debian/control widelands-build20/debian/control
+--- widelands-build20.orig/debian/control	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/control	2019-10-20 01:40:31.139084186 +0200
+@@ -51,7 +51,6 @@
+   fonts-dejavu-core,
+   fonts-dejavu-extra,
+   fonts-hosny-amiri,
+-  fonts-lklug-sinhala,
+   fonts-nakula,
+   fonts-wqy-microhei,
+   ${misc:Depends}
+diff -Naur widelands-build20.orig/debian/copyright widelands-build20/debian/copyright
+--- widelands-build20.orig/debian/copyright	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/copyright	2019-10-20 01:40:31.139084186 +0200
+@@ -62,27 +62,6 @@
+ Copyright: Nakula Devanagari font © 2006 University of Cambridge. Designed and developed by  IMRC, India. Latin and Cyrillic glyphs from the font Nimbus Roman No9 L Regular, © 1999 (URW)++ Design & Development; Cyrillic glyphs by Valek Filippov © 2001-2002.
+ License: GPL-2+
+ 
+-Files: data/i18n/fonts/Sinhala/*
+-Copyright: 2004,2008 Anuradha Ratnaweera and Harshani Devadithya, 2006 Harshula Jayasuriya, 1994, The Wellcome Trust, London
+-License:
+-  LKLUG font is free software; you can redistribute it and/or modify
+-  it under the terms of the GNU General Public License, version 2, as
+-  published by the Free Software Foundation.
+-
+-  This program is distributed in the hope that it will be useful, but
+-  WITHOUT ANY WARRANTY; without even the implied warranty of
+-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-  General Public License, version 2, for more details.
+-
+-  The Debian packaging is (C) 2004,2008, Anuradha Ratnaweera, and is
+-  licensed under the GNU General Public License, version 2.
+-
+-  You should have received a copy of the GNU General Public License,
+-  version 2, in the file `COPYING', or on Debian based systems in the
+-  file `/usr/share/common-licenses/GPL-2'; if not, write to the Free
+-  Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+-  MA 02110-1301 USA.
+-
+ Files: data/i18n/fonts/MicroHei/*
+ Copyright WenQuanYi Board of Trustees 2008-2009
+ License: Apache 2.0
+@@ -209,10 +188,6 @@
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing
+   permissions and limitations under the License.
+ 
+-Files: data/i18n/fonts/*mmrCensus*
+-Copyright: SIG, http://www.myanmarlanguage.org/site-info/SIG-Myanmar-Language
+-License: SIL-Open-Font-License
+-
+ Files: data/i18n/fonts/DejaVu/*
+ Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is a trademark of Bitstream, Inc.
+ License: Vera Fonts License, BSD like
+diff -Naur widelands-build20.orig/debian/org.widelands.widelands.desktop widelands-build20/debian/org.widelands.widelands.desktop
+--- widelands-build20.orig/debian/org.widelands.widelands.desktop	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/org.widelands.widelands.desktop	2019-10-20 01:40:31.139084186 +0200
+@@ -41,6 +41,7 @@
+ GenericName[sv]=Strategispel
+ GenericName[tr]=Strateji Oyunu
+ GenericName[uk]=Стратегічна гра
++GenericName[zh_CN]=策略游戏
+ GenericName[zh_TW]=策略遊戲
+ Comment=A real-time build-up strategy game
+ Comment[ar]=لعبة بناء إستراتيجية في الوقت الحقيقي
+@@ -74,6 +75,7 @@
+ Comment[sv]=Ett uppbyggnadsstrategispel i realtid
+ Comment[tr]=Gerçek zamanlı inşa strateji oyunu
+ Comment[uk]=Стратегічна гра у режимі реального часу
++Comment[zh_CN]=即时策略游戏
+ Comment[zh_TW]=一款即時演變的策略遊戲
+ Icon=widelands
+ TryExec=widelands
+diff -Naur widelands-build20.orig/debian/rules widelands-build20/debian/rules
+--- widelands-build20.orig/debian/rules	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/rules	2019-10-20 01:40:31.139084186 +0200
+@@ -36,8 +36,6 @@
+ 	# ln -s /usr/share/fonts/truetype/wqy debian/tmp/usr/share/games/widelands/data/i18n/fonts/MicroHei
+ 	# rm -r debian/tmp/usr/share/games/widelands/data/i18n/fonts/Nakula
+ 	# ln -s /usr/share/fonts/truetype/Nakula debian/tmp/usr/share/games/widelands/data/i18n/fonts
+-	# rm -r debian/tmp/usr/share/games/widelands/data/i18n/fonts/Sinhala
+-	# ln -s /usr/share/fonts/truetype/sinhala debian/tmp/usr/share/games/widelands/data/i18n/fonts/Sinhala
+ 	# Remove the licenses that are included in debian/copyright
+ 	rm debian/tmp/usr/share/games/widelands/data/i18n/fonts/Culmus/LICENSE
+ 	rm debian/tmp/usr/share/games/widelands/data/i18n/fonts/Widelands/LICENSE
+diff -Naur widelands-build20.orig/debian/translations/af_ZA.json widelands-build20/debian/translations/af_ZA.json
+--- widelands-build20.orig/debian/translations/af_ZA.json	1970-01-01 01:00:00.000000000 +0100
++++ widelands-build20/debian/translations/af_ZA.json	2019-10-20 01:40:31.139084186 +0200
+@@ -0,0 +1,9 @@
++{
++	"name": "Widelands",
++	"category": "Strategy Game",
++	"tagline": "A real-time build-up strategy game",
++	"description":[
++		"You are the regent of a small clan. Your task is to build an ever growing settlement. Every member of your clan will do his or her part to produce more resources to further this growth.",
++		"Widelands offers a single-player mode with campaigns that tell stories of the tribes and their struggle in the Widelands universe. However, settling really starts when you unite with friends over the Internet or LAN to build up new empires together – or to crush each other in the dusts of war. Widelands also offers an artificial intelligence to challenge you."
++	]
++}
+diff -Naur widelands-build20.orig/debian/translations/it.json widelands-build20/debian/translations/it.json
+--- widelands-build20.orig/debian/translations/it.json	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/translations/it.json	2019-10-20 01:40:31.141084214 +0200
+@@ -3,7 +3,7 @@
+ 	"category": "Gioco di strategia",
+ 	"tagline": "Un gioco di costruzione e strategia in tempo reale",
+ 	"description":[
+-		"Sei il reggente di un piccolo clan. Il tuo compito è costruire un insediamento in continua crescita. Ogni componente del tuo clan del tuo clan farà la sua parte per produrre più risorse per favorire questa crescita.",
+-		"Widelands è giocabile in modalità giocatore singolo, con campagne che raccontano storie delle tribù e la loro lotta nell'universo Widelands . Oppure, l'insediamento in realtà inizia quando vi unite con gli amici su Internet o in LAN per costruire nuovi imperi insieme – o per schiacciare gli altri nella polvere in una guerra. In Widelands è presente anche una intelligenza artificiale per metterti alla prova."
++		"Sei il reggente di un piccolo clan. Il tuo compito è costruire un insediamento in continua crescita. Ogni componente del tuo clan farà la sua parte per produrre più risorse per favorire questa crescita.",
++		"Widelands offre una modalità giocatore singolo con campagne che raccontano le storie delle tribù e la loro lotta nell'universo di Widelands. Tuttavia, l'insediamento inizia davvero quando ti unisci con gli amici su Internet o LAN per costruire nuovi imperi insieme - o per frantumarsi a vicenda nella polvere della guerra. Widelands offre anche un'intelligenza artificiale per metterti alla prova."
+ 	]
+ }
+diff -Naur widelands-build20.orig/debian/translations/nds.json widelands-build20/debian/translations/nds.json
+--- widelands-build20.orig/debian/translations/nds.json	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/translations/nds.json	2019-10-20 01:40:31.141084214 +0200
+@@ -4,6 +4,6 @@
+ 	"tagline": "Een taktisk Speel över 't Upbauen in Echt-Tied",
+ 	"description":[
+ 		"Du büst de Baas vun eenem lütten Volk. Dien Upgaav is, een Dörp zu bauen un stadig to vergrotern. Elkeen Minsk in dienem Volk sett sien beste Been vör, um mehr Waren un Mineraale to produzeren un dat Wassdoom widertodrieven.",
+-		"Widelands is för eenen Speler gadelk un hett Rutfödderungs-Riege, de de Histoorje vun de Völker un hör Leven in de Welt vun Widelands vertellen. Dat Spölen fangt aver eerst dann würrelk an, wenn du mit dienen Frünnen över 't Internett oder LAN tosammen neje Rieken baust – oder hör nanner in gewaltigen Slachten verneelt. Widelands hett ok eenen künstelk Speler, tegen hüm du antreden kannst."
++		"Widelands is för eenen Speler gadelk un hett Rutfödderungs-Riege, de de Histoorje vun de Völker un hör Leven in de Welt vun Widelands vertellen. Dat Spölen fangt aver eerst dann würrelk an, wenn du mit dienen Frünnen över 't Internett of LAN tosammen neje Rieken baust – of hör nanner in gewaltigen Slachten verneelt. Widelands hett ok eenen künstelk Speler, tegen hüm du antreden kannst."
+ 	]
+ }
+diff -Naur widelands-build20.orig/debian/translations/sr_RS.json widelands-build20/debian/translations/sr_RS.json
+--- widelands-build20.orig/debian/translations/sr_RS.json	1970-01-01 01:00:00.000000000 +0100
++++ widelands-build20/debian/translations/sr_RS.json	2019-10-20 01:40:31.142084228 +0200
+@@ -0,0 +1,9 @@
++{
++	"name": "Widelands",
++	"category": "Strategy Game",
++	"tagline": "A real-time build-up strategy game",
++	"description":[
++		"You are the regent of a small clan. Your task is to build an ever growing settlement. Every member of your clan will do his or her part to produce more resources to further this growth.",
++		"Widelands offers a single-player mode with campaigns that tell stories of the tribes and their struggle in the Widelands universe. However, settling really starts when you unite with friends over the Internet or LAN to build up new empires together – or to crush each other in the dusts of war. Widelands also offers an artificial intelligence to challenge you."
++	]
++}
+diff -Naur widelands-build20.orig/debian/translations/zh_CN.json widelands-build20/debian/translations/zh_CN.json
+--- widelands-build20.orig/debian/translations/zh_CN.json	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/translations/zh_CN.json	2019-10-20 01:40:31.142084228 +0200
+@@ -1,9 +1,9 @@
+ {
+ 	"name": "Widelands",
+-	"category": "Strategy Game",
+-	"tagline": "A real-time build-up strategy game",
++	"category": "策略游戏",
++	"tagline": "即时策略游戏",
+ 	"description":[
+-		"You are the regent of a small clan. Your task is to build an ever growing settlement. Every member of your clan will do his or her part to produce more resources to further this growth.",
++		"作为小部落的摄政王， 你的任务是让部落发展壮大。 每个成员会尽力生产资源，促进增长。",
+ 		"Widelands offers a single-player mode with campaigns that tell stories of the tribes and their struggle in the Widelands universe. However, settling really starts when you unite with friends over the Internet or LAN to build up new empires together – or to crush each other in the dusts of war. Widelands also offers an artificial intelligence to challenge you."
+ 	]
+ }
+diff -Naur widelands-build20.orig/debian/widelands.appdata.xml widelands-build20/debian/widelands.appdata.xml
+--- widelands-build20.orig/debian/widelands.appdata.xml	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/debian/widelands.appdata.xml	2019-10-20 01:40:31.143084242 +0200
+@@ -39,6 +39,7 @@
+   <summary xml:lang="sv">Ett uppbyggnadsstrategispel i realtid</summary>
+   <summary xml:lang="tr">Gerçek zamanlı inşa strateji oyunu</summary>
+   <summary xml:lang="uk">Стратегічна гра у режимі реального часу</summary>
++  <summary xml:lang="zh_CN">即时策略游戏</summary>
+   <summary xml:lang="zh_TW">一款即時演變的策略遊戲</summary>
+   <description>
+     <p>
+@@ -144,10 +145,10 @@
+       A Widelands tartalmaz egy egyjátékos módot, hadjáratokkal, amelyek a törzsekről és az ő viszontagságaikról mesélnek a Widelands univerzumában. Azonban a móka akkor kezdődik csak el igazán, mikor összejössz barátaiddal az Interneten vagy LAN-on keresztül, hogy közösen építsetek fel új birodalmakat – vagy háborúban porig romboljátok egymást. A Widelands mesterséges intelligencia formájában is kihívást kínál.
+     </p>
+     <p xml:lang="it">
+-      Sei il reggente di un piccolo clan. Il tuo compito è costruire un insediamento in continua crescita. Ogni componente del tuo clan del tuo clan farà la sua parte per produrre più risorse per favorire questa crescita.
++      Sei il reggente di un piccolo clan. Il tuo compito è costruire un insediamento in continua crescita. Ogni componente del tuo clan farà la sua parte per produrre più risorse per favorire questa crescita.
+     </p>
+     <p xml:lang="it">
+-      Widelands è giocabile in modalità giocatore singolo, con campagne che raccontano storie delle tribù e la loro lotta nell'universo Widelands . Oppure, l'insediamento in realtà inizia quando vi unite con gli amici su Internet o in LAN per costruire nuovi imperi insieme – o per schiacciare gli altri nella polvere in una guerra. In Widelands è presente anche una intelligenza artificiale per metterti alla prova.
++      Widelands offre una modalità giocatore singolo con campagne che raccontano le storie delle tribù e la loro lotta nell'universo di Widelands. Tuttavia, l'insediamento inizia davvero quando ti unisci con gli amici su Internet o LAN per costruire nuovi imperi insieme - o per frantumarsi a vicenda nella polvere della guerra. Widelands offre anche un'intelligenza artificiale per metterti alla prova.
+     </p>
+     <p xml:lang="ja">
+       あなたは小さな部族の執政官です。あなたの使命は部族を発展させていくことにあります。部族の全てのメンバーがさらなる発展のため各種生産活動に力を尽くしてくれることでしょう。
+@@ -183,7 +184,7 @@
+       Du büst de Baas vun eenem lütten Volk. Dien Upgaav is, een Dörp zu bauen un stadig to vergrotern. Elkeen Minsk in dienem Volk sett sien beste Been vör, um mehr Waren un Mineraale to produzeren un dat Wassdoom widertodrieven.
+     </p>
+     <p xml:lang="nds">
+-      Widelands is för eenen Speler gadelk un hett Rutfödderungs-Riege, de de Histoorje vun de Völker un hör Leven in de Welt vun Widelands vertellen. Dat Spölen fangt aver eerst dann würrelk an, wenn du mit dienen Frünnen över 't Internett oder LAN tosammen neje Rieken baust – oder hör nanner in gewaltigen Slachten verneelt. Widelands hett ok eenen künstelk Speler, tegen hüm du antreden kannst.
++      Widelands is för eenen Speler gadelk un hett Rutfödderungs-Riege, de de Histoorje vun de Völker un hör Leven in de Welt vun Widelands vertellen. Dat Spölen fangt aver eerst dann würrelk an, wenn du mit dienen Frünnen över 't Internett of LAN tosammen neje Rieken baust – of hör nanner in gewaltigen Slachten verneelt. Widelands hett ok eenen künstelk Speler, tegen hüm du antreden kannst.
+     </p>
+     <p xml:lang="nl">
+       Je bent de leider van een kleine stam.  Het is jouw taak een bloeiende nederzetting uit te bouwen.  Elk stamlid zal daarbij haar of zijn steentje bijdragen door het produceren van meer grondstoffen.
+@@ -252,6 +253,12 @@
+     <p xml:lang="uk">
+       Widelands пропонує режим одиночної гри в кампанію, яка розповідає історії племен і їх боротьбу у всесвіті Widelands. Однак, реальне розселення починається тоді, коли ви об’єднуєтеся з друзями через інтернет або локальну мережу, будувати нові імперії разом, або розбити один одного в пилу війни. Widelands також пропонує штучний інтелект, щоб кинути виклик вам.
+     </p>
++    <p xml:lang="zh_CN">
++      作为小部落的摄政王， 你的任务是让部落发展壮大。 每个成员会尽力生产资源，促进增长。
++    </p>
++    <p xml:lang="zh_CN">
++      Widelands offers a single-player mode with campaigns that tell stories of the tribes and their struggle in the Widelands universe. However, settling really starts when you unite with friends over the Internet or LAN to build up new empires together – or to crush each other in the dusts of war. Widelands also offers an artificial intelligence to challenge you.
++    </p>
+   </description>
+   <screenshots>
+     <screenshot type="default">
+@@ -305,6 +312,7 @@
+     <release date="2002-08-27" version="Build 1"/>
+   </releases>
+   <languages>
++    <lang>af_ZA</lang>
+     <lang>ar</lang>
+     <lang>ast</lang>
+     <lang>bg</lang>
+@@ -361,6 +369,7 @@
+     <lang>sk</lang>
+     <lang>sl</lang>
+     <lang>sr</lang>
++    <lang>sr_RS</lang>
+     <lang>sv</lang>
+     <lang>tr</lang>
+     <lang>uk</lang>
+diff -Naur widelands-build20.orig/utils/merge_and_push_translations.sh widelands-build20/utils/merge_and_push_translations.sh
+--- widelands-build20.orig/utils/merge_and_push_translations.sh	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/utils/merge_and_push_translations.sh	2019-10-20 01:40:32.227099244 +0200
+@@ -1,10 +1,12 @@
+ #!/bin/bash
+ 
+-## This script will pull new translations from Transifex into local trunk
+-## and fix the line breaks.
++## This script will check out the current master and then pull new translations
++## from Transifex.
+ ## It then updates the developers/authors file.
+-## Afterwards, the catalogs will be updated and the result pushed to
+-## trunk on Launchpad.
++## Afterwards, the catalogs will be updated.
++## We also run utils/fix_formatting.py to periodically format the source code.
++## Finally, the result will pushed to the master branch on GitHub
++## and to Transifex.
+ 
+ # Exit as soon as any line in the bash script fails.
+ set -e
+@@ -18,36 +20,46 @@
+ if [ ! -f "utils/buildcat.py" ]; then
+ 	echo "Unable to find 'utils/buildcat.py'."
+ 	echo "Make sure you start this script from Widelands' base or utils directory.";
+-	exit 1;
++	exit 1
+ fi
+ 
+-# Make sure we have a local trunk branch.
+-PARENT=$(bzr config parent_location)
+-if [[ "$PARENT" != "bzr+ssh://bazaar.launchpad.net/~widelands-dev/widelands/trunk/" &&
+-      "$PARENT" != "bzr+ssh://bazaar.launchpad.net/+branch/widelands/" ]]; then
+-	echo "The current bzr branch is not trunk.";
+-	exit 1;
++# Ensure that our git is clean
++rm -f po/*/*.pot.*~
++rm -f po/*/*.po.*~
++
++STATUS="$(git status)"
++echo "${STATUS}"
++if [[ "${STATUS}" != *"nothing to commit, working tree clean"* ]]; then
++  echo "git status must be empty to prevent accidental commits etc."
++  exit 1
+ fi
+ 
+-STATUS="$(bzr status)"
+-if [ ! -z "${STATUS}" ]; then
+-  echo "bzr status must be empty to prevent accidental commits"
++# Checkout master and pull latest version
++git checkout master
++git pull https://github.com/widelands/widelands.git master
++
++# Double-check that it's clean
++STATUS="$(git status)"
++echo "${STATUS}"
++if [[ "${STATUS}" != *"nothing to commit, working tree clean"* ]]; then
++  echo "git status must be empty to prevent accidental commits etc."
+   exit 1
+ fi
+ 
++echo "Working tree is clean, continuing"
++
+ # Print all commands.
+ set -x
+ 
+-# Pull translations from Transifex into local trunk and add new translation files
+-bzr pull
++# Pull translations from Transifex
+ tx pull -a
+-bzr add po/*/*.po po/*/*.pot data/i18n/locales/*.json debian/translations/*.json || true
+ 
+ # Update authors file
+ utils/update_authors.py
+ if [ $? -eq 0 ]
+ then
+   echo "Updated authors";
++
+ else
+   echo "Failed updating authors";
+   exit 1;
+@@ -63,16 +75,10 @@
+   exit 1;
+ fi
+ 
+-# Fix formatting is being run by bunnybot
+-# utils/fix_formatting.py
+-
+-# Update catalogues.
++# Update catalogs
+ utils/buildcat.py
+ 
+-# Update statistics.
+-# Prior calls to bzr revert might have left behind backup files that will confuse pocount
+-rm -f po/*/*.pot.~*~
+-rm -f po/*/*.po.~*~
++# Update statistics
+ utils/update_translation_stats.py
+ if [ $? -eq 0 ]
+ then
+@@ -82,9 +88,22 @@
+   exit 1;
+ fi
+ 
++# Fix formatting for C++, Lua & Python
++python utils/fix_formatting.py
++
++# Stage changes
++# - Translations
++git add po/*/*.po po/*/*.pot data/i18n/locales/*.json debian/translations/*.json || true
++# - Authors
++git add data/txts/*.lua || true
++# - Appdata
++git add debian/widelands.appdata.xml debian/org.widelands.widelands.desktop || true
++# - Statistics
++git add data/i18n/translation_stats.conf || true
++
+ # Commit and push.
+-bzr commit -m "Fetched translations and updated catalogues."
+-bzr push lp:widelands
++git commit -m "Fetched translations and updated catalogs."
++git push https://github.com/widelands/widelands.git master
+ 
+-# Push catalogues to Transifex
++# Push catalogs to Transifex
+ tx push -s
+diff -Naur widelands-build20.orig/utils/update_translation_stats.py widelands-build20/utils/update_translation_stats.py
+--- widelands-build20.orig/utils/update_translation_stats.py	2019-05-02 07:23:39.000000000 +0200
++++ widelands-build20/utils/update_translation_stats.py	2019-10-20 01:40:32.228099257 +0200
+@@ -45,7 +45,7 @@
+     sys.stdout.write('Fetching translation stats ')
+ 
+     # Regex to extract the locale from the po filenames.
+-    regex_po = re.compile(r"/\S+/(\w+)\.po")
++    regex_po = re.compile(r'/\S+/(\w+)\.po')
+ 
+     # We get errors for non-po files in the base po dir, so we have to walk
+     # the subdirs.

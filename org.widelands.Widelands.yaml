@@ -3,7 +3,6 @@ runtime: org.freedesktop.Platform
 runtime-version: '19.08'
 sdk: org.freedesktop.Sdk
 command: widelands
-rename-icon: org.widelands.Widelands
 finish-args:
   # X11 + XShm access
   - --share=ipc
@@ -77,23 +76,27 @@ modules:
       - type: archive
         url: https://launchpad.net/widelands/build20/build20/+download/widelands-build20.tar.bz2
         sha256: 38594d98c74f357d4c31dd8ee2b056bfe921f42935935af915d11b792677bcb2
+        git-init: true
       - type: patch
         path: widelands-build20-gcc.patch
       # https://bugs.launchpad.net/widelands/+bug/1836107
       # undefined reference to `glReadPixels'
       - type: patch
         path: widelands-build20-gl.patch
+      # Update translations
+      - type: patch
+        path: widelands-build20-xdg-translations.patch
+        use-git: true
+      # Move XDG-related stuff from debian/rules to xdg/CMakeLists.txt
+      # https://github.com/widelands/widelands/pull/3547
+      - type: patch
+        path: widelands-build20-xdg-cmake.patch
+        use-git: true
     post-install:
-      # https://bugs.launchpad.net/widelands/+bug/1807625
-      - |
-        for f in "../debian/org.widelands.widelands.desktop"; do
-          desktop-file-edit --set-key='X-Flatpak-RenamedFrom' --set-value="${FLATPAK_ID,,}.desktop;${FLATPAK_ID,,};" "${f}";
-          desktop-file-edit --set-key='Keywords' --set-value='Game;RTS;Real-time;Strategy;' "${f}";
-        done;
       # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
       # https://bugs.launchpad.net/widelands/+bug/1807625
       - |
-        for f in "../debian/widelands.appdata.xml"; do
+        for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
           xmlstarlet ed --inplace -d '/component/icon' "${f}";
           xmlstarlet ed --inplace -u '/component/id' -v "${FLATPAK_ID}" "${f}";
@@ -101,9 +104,3 @@ modules:
           [[ "$( xmlstarlet sel -t -v "/component/provides/id='${FLATPAK_ID,,}.desktop'" "${f}" )" == 'true' ]] || xmlstarlet ed --inplace -s '/component/provides' -t elem -n 'id' -v "${FLATPAK_ID,,}.desktop" "${f}";
           [[ "$( xmlstarlet sel -t -v "/component/provides/id='${FLATPAK_ID,,}'" "${f}" )" == 'true' ]] || xmlstarlet ed --inplace -s '/component/provides' -t elem -n 'id' -v "${FLATPAK_ID,,}" "${f}";
         done;
-      - |
-        for s in {16,32,48,64,128}; do
-          install -p -D -m 0644 "../data/images/logos/wl-ico-${s}.png" "${FLATPAK_DEST}/share/icons/hicolor/${s}x${s}/apps/${FLATPAK_ID}.png";
-        done;
-      - install -p -D -m 0644 "../debian/org.widelands.widelands.desktop" "${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop";
-      - install -p -D -m 0644 "../debian/widelands.appdata.xml" "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml";

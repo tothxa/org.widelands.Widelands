@@ -1934,10 +1934,10 @@ index 0000000..889ef2d
 +endif (GTK_UPDATE_ICON_CACHE)
 diff --git a/xdg/org.widelands.Widelands.appdata.xml b/xdg/org.widelands.Widelands.appdata.xml
 new file mode 100644
-index 0000000..7f9950a
+index 0000000..9614623
 --- /dev/null
 +++ b/xdg/org.widelands.Widelands.appdata.xml
-@@ -0,0 +1,435 @@
+@@ -0,0 +1,436 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<!-- Copyright 2016 The Widelands Development Team <widelands-dev_at_lists.launchpad.net> -->
 +<component type="desktop-application">
@@ -2224,6 +2224,7 @@ index 0000000..7f9950a
 +  <update_contact>widelands-dev_at_lists.launchpad.net</update_contact>
 +  <provides>
 +    <binary>widelands</binary>
++    <id>widelands.desktop</id>
 +    <id>org.widelands.widelands.desktop</id>
 +    <id>org.widelands.widelands</id>
 +  </provides>
@@ -2375,10 +2376,10 @@ index 0000000..7f9950a
 +</component>
 diff --git a/xdg/org.widelands.Widelands.appdata.xml.stub b/xdg/org.widelands.Widelands.appdata.xml.stub
 new file mode 100644
-index 0000000..18004fa
+index 0000000..f0ce030
 --- /dev/null
 +++ b/xdg/org.widelands.Widelands.appdata.xml.stub
-@@ -0,0 +1,90 @@
+@@ -0,0 +1,91 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<!-- Copyright 2016 The Widelands Development Team <widelands-dev_at_lists.launchpad.net> -->
 +<component type="desktop-application">
@@ -2411,6 +2412,7 @@ index 0000000..18004fa
 +  <update_contact>widelands-dev_at_lists.launchpad.net</update_contact>
 +  <provides>
 +    <binary>widelands</binary>
++    <id>widelands.desktop</id>
 +    <id>org.widelands.widelands.desktop</id>
 +    <id>org.widelands.widelands</id>
 +  </provides>
@@ -2471,7 +2473,7 @@ index 0000000..18004fa
 +</component>
 diff --git a/xdg/org.widelands.Widelands.desktop b/xdg/org.widelands.Widelands.desktop
 new file mode 100644
-index 0000000..a904780
+index 0000000..5b9750c
 --- /dev/null
 +++ b/xdg/org.widelands.Widelands.desktop
 @@ -0,0 +1,88 @@
@@ -2562,10 +2564,10 @@ index 0000000..a904780
 +Terminal=false
 +StartupNotify=true
 +StartupWMClass=widelands
-+X-Flatpak-RenamedFrom=org.widelands.widelands.desktop;org.widelands.widelands;
++X-Flatpak-RenamedFrom=widelands.desktop;org.widelands.widelands.desktop;
 diff --git a/xdg/org.widelands.Widelands.desktop.stub b/xdg/org.widelands.Widelands.desktop.stub
 new file mode 100644
-index 0000000..d7e5b11
+index 0000000..95ef67b
 --- /dev/null
 +++ b/xdg/org.widelands.Widelands.desktop.stub
 @@ -0,0 +1,13 @@
@@ -2581,7 +2583,7 @@ index 0000000..d7e5b11
 +Terminal=false
 +StartupNotify=true
 +StartupWMClass=widelands
-+X-Flatpak-RenamedFrom=org.widelands.widelands.desktop;org.widelands.widelands;
++X-Flatpak-RenamedFrom=widelands.desktop;org.widelands.widelands.desktop;
 diff --git a/xdg/translations/af_ZA.json b/xdg/translations/af_ZA.json
 new file mode 100644
 index 0000000..d4dc780

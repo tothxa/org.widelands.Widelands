@@ -15,8 +15,14 @@ finish-args:
   # OpenGL access
   - --device=dri
 cleanup:
+  - /bin/pip*
+  - /bin/python*
+  - /bin/smtpd.py
   - /include
+  - /lib/debug/source/python*
+  - /lib/libpython*
   - /lib/pkgconfig
+  - /lib/python*
   - /share/man
   - '*.la'
   - '*.a'
@@ -24,6 +30,7 @@ modules:
   - shared-modules/lua5.3/lua-5.3.5.json
   - shared-modules/glu/glu-9.json
   - shared-modules/glew/glew.json
+  - shared-modules/python2.7/python-2.7.json
 
   - name: boost
     buildsystem: simple

@@ -105,9 +105,4 @@ modules:
       - |
         for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
-          xmlstarlet ed --inplace -d '/component/icon' "${f}";
-          xmlstarlet ed --inplace -u '/component/id' -v "${FLATPAK_ID}" "${f}";
-          xmlstarlet ed --inplace -u '/component/launchable' -v "${FLATPAK_ID}.desktop" "${f}";
-          [[ "$( xmlstarlet sel -t -v "/component/provides/id='${FLATPAK_ID,,}.desktop'" "${f}" )" == 'true' ]] || xmlstarlet ed --inplace -s '/component/provides' -t elem -n 'id' -v "${FLATPAK_ID,,}.desktop" "${f}";
-          [[ "$( xmlstarlet sel -t -v "/component/provides/id='${FLATPAK_ID,,}'" "${f}" )" == 'true' ]] || xmlstarlet ed --inplace -s '/component/provides' -t elem -n 'id' -v "${FLATPAK_ID,,}" "${f}";
         done;

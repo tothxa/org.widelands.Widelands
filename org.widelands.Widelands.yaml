@@ -4,6 +4,9 @@ runtime: org.freedesktop.Platform
 runtime-version: '19.08'
 sdk: org.freedesktop.Sdk
 command: widelands
+desktop-file-name-suffix: ' (Beta)'
+tags:
+  - beta
 finish-args:
   # X11 + XShm access
   - --share=ipc

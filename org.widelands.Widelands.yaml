@@ -105,7 +105,7 @@ modules:
             echo "${version_git}" > "WL_VERSION";
             echo "${version_old}";
             echo "${version_git}";
-          - cp -p "WL_VERSION" "WL_RELEASE";
+          #- cp -p "WL_VERSION" "WL_RELEASE";
     post-install:
       # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
       # https://bugs.launchpad.net/widelands/+bug/1807625

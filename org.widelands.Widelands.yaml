@@ -83,6 +83,8 @@ modules:
       - type: git
         url: https://github.com/widelands/widelands.git
         commit: 87b0494698ffabcc8d39d66e6309b1449a057acd
+        # Need full git history to generate revision number
+        disable-shallow-clone: true
       # Move XDG-related stuff from debian/rules to xdg/CMakeLists.txt
       # https://github.com/widelands/widelands/pull/3547
       - type: patch

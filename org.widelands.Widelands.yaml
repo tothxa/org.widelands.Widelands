@@ -80,25 +80,32 @@ modules:
     build-options:
       ldflags: -lGL
     sources:
-      - type: archive
-        url: https://launchpad.net/widelands/build20/build20/+download/widelands-build20.tar.bz2
-        sha256: 38594d98c74f357d4c31dd8ee2b056bfe921f42935935af915d11b792677bcb2
-        git-init: true
-      - type: patch
-        path: widelands-build20-gcc.patch
-      # https://bugs.launchpad.net/widelands/+bug/1836107
-      # undefined reference to `glReadPixels'
-      - type: patch
-        path: widelands-build20-gl.patch
-      # Update translations
-      - type: patch
-        path: widelands-build20-xdg-translations.patch
-        use-git: true
+      - type: git
+        url: https://github.com/widelands/widelands.git
+        commit: 87b0494698ffabcc8d39d66e6309b1449a057acd
+        # Need full git history to generate revision number
+        disable-shallow-clone: true
       # Move XDG-related stuff from debian/rules to xdg/CMakeLists.txt
       # https://github.com/widelands/widelands/pull/3547
       - type: patch
         path: widelands-build20-xdg-cmake.patch
         use-git: true
+      # https://github.com/widelands/widelands/issues/3558
+      - type: shell
+        commands:
+          - |
+            version_old="$( xmlstarlet sel -t -v '/component/releases/release[1]/@version' -n "xdg/${FLATPAK_ID}.appdata.xml" )";
+            version_new="$( echo "${version_old}" | ruby -e 'puts $stdin.read.gsub(/([0-9]+)/) { |m| (m.to_i + 1).to_s }' )";
+            WL_VERSION="$( python2 utils/detect_revision.py 2> /dev/null )";
+            version_git="${WL_VERSION}";
+            if [[ ! "${WL_VERSION}" =~ ^build-[0-9]+$ || "${WL_VERSION}" =~ ^r[0-9]+ ]]; then
+              revision_git="${WL_VERSION%[*}";
+              [[ -z "${revision_git}" ]] || version_git="${version_new}~${revision_git}";
+            fi;
+            echo "${version_git}" > "WL_VERSION";
+            echo "${version_old}";
+            echo "${version_git}";
+          #- cp -p "WL_VERSION" "WL_RELEASE";
     post-install:
       # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
       # https://bugs.launchpad.net/widelands/+bug/1807625
@@ -106,3 +113,11 @@ modules:
         for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
         done;
+      # https://github.com/widelands/widelands/issues/3558#issuecomment-553567846
+      - |
+        version_old="$( xmlstarlet sel -t -v '/component/releases/release[1]/@version' -n "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml" )";
+        version_git="$( cat "../WL_VERSION" 2> /dev/null )";
+        if [[ -n "${version_git}" && "${version_git}" != "${version_old}" ]]; then
+          date_git="$( git log HEAD -1 --format="%at" 2> /dev/null | xargs -I{} date -d @{} +%Y-%m-%d 2> /dev/null )";
+          xmlstarlet ed --inplace -i '/component/releases/release[1]' -t elem -n 'release' -s '/component/releases/release[1]' -t attr -n 'date' -v "${date_git}" -s '/component/releases/release[1]' -t attr -n 'version' -v "${version_git}" -s '/component/releases/release[1]' -t attr -n 'type' -v "development" "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml";
+        fi;

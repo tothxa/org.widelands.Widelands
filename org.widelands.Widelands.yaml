@@ -73,7 +73,8 @@ modules:
       - -DBOOST_ROOT=/app
       - -DGLEW_ROOT=/app
       - -DGLEW_INCLUDE_DIR=/app/include/GL
-      # https://wl.widelands.org/forum/topic/1343/?page=3 & https://wl.widelands.org/forum/post/9857/
+      # Fix an issue with linking libs
+      # https://www.widelands.org/forum/topic/1343/?page=3#post-9857
       - -DGLEW_LIBRARY:FILEPATH=/app/lib/libGLEW.a
       - -DOPENGL_glu_LIBRARY=/app/lib/libGLU.a
       - -DOPTION_BUILD_WEBSITE_TOOLS=OFF
@@ -84,8 +85,11 @@ modules:
         url: https://launchpad.net/widelands/build20/build20/+download/widelands-build20.tar.bz2
         sha256: 38594d98c74f357d4c31dd8ee2b056bfe921f42935935af915d11b792677bcb2
         git-init: true
+      # Implement support for GCC 9
+      # https://bugs.launchpad.net/widelands/+bug/1831359
       - type: patch
         path: widelands-build20-gcc.patch
+      # Build order for -lGL does not work
       # https://bugs.launchpad.net/widelands/+bug/1836107
       # undefined reference to `glReadPixels'
       - type: patch
@@ -100,9 +104,16 @@ modules:
         path: widelands-build20-xdg-cmake.patch
         use-git: true
     post-install:
-      # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
-      # https://bugs.launchpad.net/widelands/+bug/1807625
       - |
         for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
+          # Remove all but the newest release from the AppData file, because appstream-glib is broken, and the file does not pass validation
+          # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
+          # The provides tag describes the public interfaces this program provides
+          # The binary tag is a child tag of the provides tag
+          # It provides the name of a binary installed into a location in PATH
+          # However, flatpak doesn't export any binaries on the host
+          # https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-provides
+          xmlstarlet ed --inplace -d '/component/provides/binary' "${f}";
+          xmlstarlet ed --inplace -d '/component/provides[not(./*) and (not(./text()) or normalize-space(./text())="")]' "${f}";
         done;

@@ -77,7 +77,8 @@ modules:
       - -DBOOST_ROOT=/app
       - -DGLEW_ROOT=/app
       - -DGLEW_INCLUDE_DIR=/app/include/GL
-      # https://wl.widelands.org/forum/topic/1343/?page=3 & https://wl.widelands.org/forum/post/9857/
+      # Fix an issue with linking libs
+      # https://www.widelands.org/forum/topic/1343/?page=3#post-9857
       - -DGLEW_LIBRARY:FILEPATH=/app/lib/libGLEW.a
       - -DOPENGL_glu_LIBRARY=/app/lib/libGLU.a
       - -DOPTION_BUILD_WEBSITE_TOOLS=OFF
@@ -89,6 +90,7 @@ modules:
         commit: e745788804b90e2bb6f98ddf6f934089f3250aa9
         # Need full git history to generate revision number
         disable-shallow-clone: true
+      # Generate a new version number with the git revision
       # https://github.com/widelands/widelands/issues/3558
       - type: shell
         commands:
@@ -104,19 +106,21 @@ modules:
             echo "${version_git}" > "WL_VERSION";
             echo "${version_old}";
             echo "${version_git}";
+          # Use a nicer version number (e.g. Build 21~r24271) instead of the default one (e.g. r24271[e8dd143@HEAD])
+          # https://github.com/widelands/widelands/issues/3558#issuecomment-553563710
           #- cp -p "WL_VERSION" "WL_RELEASE";
     post-install:
-      # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
-      # https://bugs.launchpad.net/widelands/+bug/1807625
       - |
         for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
+          # Remove all but the newest release from the AppData file, because appstream-glib is broken, and the file does not pass validation
+          # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
+          # Put a new release into the AppData file
+          # https://github.com/widelands/widelands/issues/3558#issuecomment-553567846
+          version_old="$( xmlstarlet sel -t -v '/component/releases/release[1]/@version' -n "${f}" )";
+          version_git="$( cat "../WL_VERSION" 2> /dev/null )";
+          if [[ -n "${version_git}" && "${version_git}" != "${version_old}" ]]; then
+            date_git="$( git log HEAD -1 --format="%at" 2> /dev/null | xargs -I{} date -d @{} +%Y-%m-%d 2> /dev/null )";
+            xmlstarlet ed --inplace -i '/component/releases/release[1]' -t elem -n 'release' -s '/component/releases/release[1]' -t attr -n 'date' -v "${date_git}" -s '/component/releases/release[1]' -t attr -n 'version' -v "${version_git}" -s '/component/releases/release[1]' -t attr -n 'type' -v "development" "${f}";
+          fi;
         done;
-      # https://github.com/widelands/widelands/issues/3558#issuecomment-553567846
-      - |
-        version_old="$( xmlstarlet sel -t -v '/component/releases/release[1]/@version' -n "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml" )";
-        version_git="$( cat "../WL_VERSION" 2> /dev/null )";
-        if [[ -n "${version_git}" && "${version_git}" != "${version_old}" ]]; then
-          date_git="$( git log HEAD -1 --format="%at" 2> /dev/null | xargs -I{} date -d @{} +%Y-%m-%d 2> /dev/null )";
-          xmlstarlet ed --inplace -i '/component/releases/release[1]' -t elem -n 'release' -s '/component/releases/release[1]' -t attr -n 'date' -v "${date_git}" -s '/component/releases/release[1]' -t attr -n 'version' -v "${version_git}" -s '/component/releases/release[1]' -t attr -n 'type' -v "development" "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml";
-        fi;

@@ -109,4 +109,11 @@ modules:
           # Remove all but the newest release from the AppData file, because appstream-glib is broken, and the file does not pass validation
           # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
+          # The provides tag describes the public interfaces this program provides
+          # The binary tag is a child tag of the provides tag
+          # It provides the name of a binary installed into a location in PATH
+          # However, flatpak doesn't export any binaries on the host
+          # https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-provides
+          xmlstarlet ed --inplace -d '/component/provides/binary' "${f}";
+          xmlstarlet ed --inplace -d '/component/provides[not(./*) and (not(./text()) or normalize-space(./text())="")]' "${f}";
         done;

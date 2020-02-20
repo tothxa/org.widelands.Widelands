@@ -123,4 +123,11 @@ modules:
             date_git="$( git log HEAD -1 --format="%at" 2> /dev/null | xargs -I{} date -d @{} +%Y-%m-%d 2> /dev/null )";
             xmlstarlet ed --inplace -i '/component/releases/release[1]' -t elem -n 'release' -s '/component/releases/release[1]' -t attr -n 'date' -v "${date_git}" -s '/component/releases/release[1]' -t attr -n 'version' -v "${version_git}" -s '/component/releases/release[1]' -t attr -n 'type' -v "development" "${f}";
           fi;
+          # The provides tag describes the public interfaces this program provides
+          # The binary tag is a child tag of the provides tag
+          # It provides the name of a binary installed into a location in PATH
+          # However, flatpak doesn't export any binaries on the host
+          # https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-provides
+          xmlstarlet ed --inplace -d '/component/provides/binary' "${f}";
+          xmlstarlet ed --inplace -d '/component/provides[not(./*) and (not(./text()) or normalize-space(./text())="")]' "${f}";
         done;

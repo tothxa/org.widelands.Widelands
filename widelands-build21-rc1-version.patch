@@ -1,0 +1,28 @@
+diff -Naur widelands-build21-rc1.orig/WL_RELEASE widelands-build21-rc1/WL_RELEASE
+--- widelands-build21-rc1.orig/WL_RELEASE	2020-07-11 08:43:34.000000000 +0200
++++ widelands-build21-rc1/WL_RELEASE	2020-07-13 22:56:15.676919684 +0200
+@@ -1 +1 @@
+-Build21-RC1
++build-21-rc1
+diff -Naur widelands-build21-rc1.orig/xdg/org.widelands.Widelands.appdata.xml widelands-build21-rc1/xdg/org.widelands.Widelands.appdata.xml
+--- widelands-build21-rc1.orig/xdg/org.widelands.Widelands.appdata.xml	2020-07-11 08:43:34.000000000 +0200
++++ widelands-build21-rc1/xdg/org.widelands.Widelands.appdata.xml	2020-07-13 22:56:13.450896988 +0200
+@@ -304,6 +304,7 @@
+   </provides>
+   <launchable type="desktop-id">org.widelands.Widelands.desktop</launchable>
+   <releases>
++    <release date="2020-07-11" version="Build 21~rc1" type="development"/>
+     <release date="2019-05-02" version="Build 20"/>
+     <release date="2016-11-11" version="Build 19"/>
+     <release date="2014-02-22" version="Build 18"/>
+diff -Naur widelands-build21-rc1.orig/xdg/org.widelands.Widelands.appdata.xml.stub widelands-build21-rc1/xdg/org.widelands.Widelands.appdata.xml.stub
+--- widelands-build21-rc1.orig/xdg/org.widelands.Widelands.appdata.xml.stub	2020-07-11 08:43:34.000000000 +0200
++++ widelands-build21-rc1/xdg/org.widelands.Widelands.appdata.xml.stub	2020-07-13 22:56:11.419876280 +0200
+@@ -36,6 +36,7 @@
+   </provides>
+   <launchable type="desktop-id">org.widelands.Widelands.desktop</launchable>
+   <releases>
++    <release date="2020-07-11" version="Build 21~rc1" type="development"/>
+     <release date="2019-05-02" version="Build 20"/>
+     <release date="2016-11-11" version="Build 19"/>
+     <release date="2014-02-22" version="Build 18"/>

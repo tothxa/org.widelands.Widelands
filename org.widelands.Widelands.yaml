@@ -39,9 +39,12 @@ modules:
   - name: boost
     buildsystem: simple
     sources:
+    # Boost 1.73 is supported since Build 21~r24600 (75b494626310dd5ea04d2b2f0d63b1581a97da3c)
+    # https://github.com/widelands/widelands/issues/3905
+    # https://github.com/widelands/widelands/pull/3907
       - type: archive
-        url: https://dl.bintray.com/boostorg/release/1.72.0/source/boost_1_72_0.tar.bz2
-        sha256: 59c9b274bc451cf91a9ba1dd2c7fdcaf5d60b1b3aa83f2c9fa143417cc660722
+        url: https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0.tar.bz2
+        sha256: 4eb3b8d442b426dc35346235c8733b5ae35ba431690e38c6a8263dce9fcbb402
     build-commands:
       - ./bootstrap.sh --prefix="${FLATPAK_DEST}" --with-libraries=system,regex,test;
       - ./b2 -j"${FLATPAK_BUILDER_N_JOBS}" install;
@@ -82,44 +85,19 @@ modules:
     build-options:
       ldflags: -lGL
     sources:
-      - type: git
-        url: https://github.com/widelands/widelands.git
-        commit: 3a98a0bfec8c7519bbdac8520626b36d67f9d7fe
-        # Need full git history to generate revision number
-        disable-shallow-clone: true
-      # Generate a new version number with the git revision
-      # https://github.com/widelands/widelands/issues/3558
-      - type: shell
-        commands:
-          - |
-            version_old="$( xmlstarlet sel -t -v '/component/releases/release[1]/@version' -n "xdg/${FLATPAK_ID}.appdata.xml" )";
-            version_new="$( echo "${version_old}" | ruby -e 'puts $stdin.read.gsub(/([0-9]+)/) { |m| (m.to_i + 1).to_s }' )";
-            WL_VERSION="$( python2 utils/detect_revision.py 2> /dev/null )";
-            version_git="${WL_VERSION}";
-            if [[ ! "${WL_VERSION}" =~ ^build-[0-9]+$ || "${WL_VERSION}" =~ ^r[0-9]+ ]]; then
-              revision_git="${WL_VERSION%[*}";
-              [[ -z "${revision_git}" ]] || version_git="${version_new}~${revision_git}";
-            fi;
-            echo "${version_git}" > "WL_VERSION";
-            echo "${version_old}";
-            echo "${version_git}";
-          # Use a nicer version number (e.g. Build 21~r24271) instead of the default one (e.g. r24271[e8dd143@HEAD])
-          # https://github.com/widelands/widelands/issues/3558#issuecomment-553563710
-          #- cp -p "WL_VERSION" "WL_RELEASE";
+      - type: archive
+        url: https://github.com/widelands/widelands/archive/build21-rc1.tar.gz
+        sha256: 7837ae187c15654698c267adaa9913c6674cd5a36b65c703af429450e17df2c8
+      # Fix version string
+      # https://github.com/widelands/widelands/issues/3979
+      - type: patch
+        path: widelands-build21-rc1-version.patch
     post-install:
       - |
         for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
           # Remove all but the newest release from the AppData file, because appstream-glib is broken, and the file does not pass validation
           # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
           xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
-          # Put a new release into the AppData file
-          # https://github.com/widelands/widelands/issues/3558#issuecomment-553567846
-          version_old="$( xmlstarlet sel -t -v '/component/releases/release[1]/@version' -n "${f}" )";
-          version_git="$( cat "../WL_VERSION" 2> /dev/null )";
-          if [[ -n "${version_git}" && "${version_git}" != "${version_old}" ]]; then
-            date_git="$( git log HEAD -1 --format="%at" 2> /dev/null | xargs -I{} date -d @{} +%Y-%m-%d 2> /dev/null )";
-            xmlstarlet ed --inplace -i '/component/releases/release[1]' -t elem -n 'release' -s '/component/releases/release[1]' -t attr -n 'date' -v "${date_git}" -s '/component/releases/release[1]' -t attr -n 'version' -v "${version_git}" -s '/component/releases/release[1]' -t attr -n 'type' -v "development" "${f}";
-          fi;
           # The provides tag describes the public interfaces this program provides
           # The binary tag is a child tag of the provides tag
           # It provides the name of a binary installed into a location in PATH

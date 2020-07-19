@@ -35,12 +35,12 @@ modules:
   - name: boost
     buildsystem: simple
     sources:
-      # Boost >= 1.70 is not supported yet
-      # https://www.widelands.org/forum/topic/4513/?page=1#post-27901
-      # wl_include_system_directories Function invoked with incorrect arguments for function named: wl_include_system_directories
+      # Boost 1.73 is supported since Build 21~r24600 (75b494626310dd5ea04d2b2f0d63b1581a97da3c)
+      # https://github.com/widelands/widelands/issues/3905
+      # https://github.com/widelands/widelands/pull/3907
       - type: archive
-        url: https://dl.bintray.com/boostorg/release/1.69.0/source/boost_1_69_0.tar.bz2
-        sha256: 8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406
+        url: https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0.tar.bz2
+        sha256: 4eb3b8d442b426dc35346235c8733b5ae35ba431690e38c6a8263dce9fcbb402
     build-commands:
       - ./bootstrap.sh --prefix="${FLATPAK_DEST}" --with-libraries=system,regex,test;
       - ./b2 -j"${FLATPAK_BUILDER_N_JOBS}" install;
@@ -82,27 +82,8 @@ modules:
       ldflags: -lGL
     sources:
       - type: archive
-        url: https://launchpad.net/widelands/build20/build20/+download/widelands-build20.tar.bz2
-        sha256: 38594d98c74f357d4c31dd8ee2b056bfe921f42935935af915d11b792677bcb2
-        git-init: true
-      # Implement support for GCC 9
-      # https://bugs.launchpad.net/widelands/+bug/1831359
-      - type: patch
-        path: widelands-build20-gcc.patch
-      # Build order for -lGL does not work
-      # https://bugs.launchpad.net/widelands/+bug/1836107
-      # undefined reference to `glReadPixels'
-      - type: patch
-        path: widelands-build20-gl.patch
-      # Update translations
-      - type: patch
-        path: widelands-build20-xdg-translations.patch
-        use-git: true
-      # Move XDG-related stuff from debian/rules to xdg/CMakeLists.txt
-      # https://github.com/widelands/widelands/pull/3547
-      - type: patch
-        path: widelands-build20-xdg-cmake.patch
-        use-git: true
+        url: https://github.com/widelands/widelands/archive/build21.tar.gz
+        sha256: 601e0e4c6f91b3fb0ece2cd1b83ecfb02344a1b9194fbb70ef3f70e06994e357
     post-install:
       - |
         for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do

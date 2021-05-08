@@ -84,5 +84,7 @@ modules:
       - type: patch
         path: appstream-util.patch
       - type: shell
-        commands: utils/update_appdata.py
+        commands:
+        - |
+          utils/update_appdata.py
 

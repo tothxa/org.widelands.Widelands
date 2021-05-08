@@ -1,0 +1,2 @@
+nice -19 flatpak-builder --force-clean build --repo=repo "org.widelands.Widelands.yaml"
+nice -19 flatpak build-bundle repo widelands-beta.flatpak org.widelands.Widelands --runtime-repo=https://flathub.org/beta-repo/flathub-beta.flatpakrepo beta

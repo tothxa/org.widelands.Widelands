@@ -1,7 +1,7 @@
 app-id: org.widelands.Widelands
 default-branch: beta
 runtime: org.freedesktop.Platform
-runtime-version: '19.08'
+runtime-version: '20.08'
 sdk: org.freedesktop.Sdk
 command: widelands
 desktop-file-name-suffix: ' (Beta)'
@@ -34,7 +34,6 @@ modules:
   - shared-modules/lua5.3/lua-5.3.5.json
   - shared-modules/glu/glu-9.json
   - shared-modules/glew/glew.json
-  - shared-modules/python2.7/python-2.7.json
 
   - name: boost
     buildsystem: simple
@@ -43,34 +42,19 @@ modules:
     # https://github.com/widelands/widelands/issues/3905
     # https://github.com/widelands/widelands/pull/3907
       - type: archive
-        url: https://dl.bintray.com/boostorg/release/1.73.0/source/boost_1_73_0.tar.bz2
-        sha256: 4eb3b8d442b426dc35346235c8733b5ae35ba431690e38c6a8263dce9fcbb402
+        url: https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
+        sha256: f0397ba6e982c4450f27bf32a2a83292aba035b827a5623a14636ea583318c41
     build-commands:
       - ./bootstrap.sh --prefix="${FLATPAK_DEST}" --with-libraries=system,regex,test;
       - ./b2 -j"${FLATPAK_BUILDER_N_JOBS}" install;
-
-  - name: xmlstarlet
-    config-opts:
-      - --disable-static-libs
-      - --with-libxml-libs-prefix=/usr/lib
-      - --with-libxml-include-prefix=/usr/include/libxml2
-    sources:
-      - type: archive
-        url: https://downloads.sourceforge.net/xmlstar/xmlstarlet-1.6.1.tar.gz
-        sha256: 15d838c4f3375332fd95554619179b69e4ec91418a3a5296e7c631b7ed19e7ca
-      - type: shell
-        commands:
-          - cp -p /usr/share/automake-*/config.{sub,guess} .;
-          - autoreconf -vfi;
-    post-install:
-      - ln -s "xml" "${FLATPAK_DEST}/bin/xmlstarlet" ||:;
-    cleanup: ["*"]
 
   - name: Widelands
     buildsystem: cmake-ninja
     builddir: true
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
+      # Set version string without disable-shallow-clone: true
+      - -DWL_VERSION="1.0~git25296[3f3c18d@master]"
       - -DCMAKE_INSTALL_PREFIX=/app/bin
       - -DWL_INSTALL_BASEDIR=/app/share/widelands
       - -DWL_INSTALL_DATADIR=/app/share/widelands
@@ -85,24 +69,20 @@ modules:
     build-options:
       ldflags: -lGL
     sources:
-      - type: archive
-        url: https://github.com/widelands/widelands/archive/build21-rc1.tar.gz
-        sha256: 7837ae187c15654698c267adaa9913c6674cd5a36b65c703af429450e17df2c8
-      # Fix version string
-      # https://github.com/widelands/widelands/issues/3979
+      - type: git
+        url: https://github.com/widelands/widelands.git
+        commit: 3f3c18dea19ff2cfa449603398c4953ed8b59ecf
+      # Fix issues with xdg/org.widelands.Widelands.appdata.xml:
+      #  * Set version
+      #  * Remove all other releases from the AppData file, because
+      #    appstream-glib is broken, and the file does not pass validation
+      #    https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
+      #  * Remove the binary from provides.
       - type: patch
-        path: widelands-build21-rc1-version.patch
-    post-install:
-      - |
-        for f in "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.appdata.xml"; do
-          # Remove all but the newest release from the AppData file, because appstream-glib is broken, and the file does not pass validation
-          # https://github.com/hughsie/appstream-glib/pull/272#issuecomment-439812546
-          xmlstarlet ed --inplace -d '/component/releases/release[position()>1]' "${f}";
-          # The provides tag describes the public interfaces this program provides
-          # The binary tag is a child tag of the provides tag
-          # It provides the name of a binary installed into a location in PATH
-          # However, flatpak doesn't export any binaries on the host
-          # https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html#tag-provides
-          xmlstarlet ed --inplace -d '/component/provides/binary' "${f}";
-          xmlstarlet ed --inplace -d '/component/provides[not(./*) and (not(./text()) or normalize-space(./text())="")]' "${f}";
-        done;
+        path: appdata_stub.patch
+      # use appstream-util instead of appstreamcli to validate file
+      - type: patch
+        path: appstream-util.patch
+      - type: shell
+        commands: utils/update_appdata.py
+

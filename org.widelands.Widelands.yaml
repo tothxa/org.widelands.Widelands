@@ -19,19 +19,13 @@ finish-args:
   # OpenGL access
   - --device=dri
 cleanup:
-  - /bin/pip*
-  - /bin/python*
-  - /bin/smtpd.py
   - /include
-  - /lib/debug/source/python*
-  - /lib/libpython*
   - /lib/pkgconfig
-  - /lib/python*
   - /share/man
   - '*.la'
   - '*.a'
+  - /lib/cmake
 modules:
-  - shared-modules/lua5.3/lua-5.3.5.json
   - shared-modules/glu/glu-9.json
   - shared-modules/glew/glew.json
 
@@ -54,7 +48,7 @@ modules:
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       # Set version string without disable-shallow-clone: true
-      - -DWL_VERSION="1.0~git25296[3f3c18d@master]"
+      - -DWL_VERSION="1.0~git25303[857dd74@master]"
       - -DCMAKE_INSTALL_PREFIX=/app/bin
       - -DWL_INSTALL_BASEDIR=/app/share/widelands
       - -DWL_INSTALL_DATADIR=/app/share/widelands
@@ -71,7 +65,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/widelands/widelands.git
-        commit: 3f3c18dea19ff2cfa449603398c4953ed8b59ecf
+        commit: 857dd74595c6da8885fcfd7d6f5f32037f2c3a73
       # Fix issues with xdg/org.widelands.Widelands.appdata.xml:
       #  * Set version
       #  * Remove all other releases from the AppData file, because

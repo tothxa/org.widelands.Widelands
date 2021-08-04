@@ -82,6 +82,12 @@ $ git submodule init
 $ git submodule update
 ```
 
+Updating submodules later to newest version:
+
+```
+$ git submodule update --remote --merge
+```
+
 ### Build
 
 ```

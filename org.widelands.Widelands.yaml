@@ -44,10 +44,11 @@ modules:
     builddir: true
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
+      - -DOPTION_BUILD_WEBSITE_TOOLS=OFF
       # Set version string without 'disable-shallow-clone: true'
       # (do not quote, flatpak-builder will quote it, and if we quote it too,
       # then datadirversion will have quotes, and be incompatible with binary)
-      - -DWL_VERSION=1.1~git25519[17705ed@master]
+      - -DWL_VERSION=1.1~git25545[4bcc4e3@master]
       - -DCMAKE_INSTALL_PREFIX=/app/bin
       - -DWL_INSTALL_BASEDIR=/app/share/widelands
       - -DWL_INSTALL_DATADIR=/app/share/widelands
@@ -58,14 +59,13 @@ modules:
       # https://www.widelands.org/forum/topic/1343/?page=3#post-9857
       - -DGLEW_LIBRARY:FILEPATH=/app/lib/libGLEW.a
       - -DOPENGL_glu_LIBRARY=/app/lib/libGLU.a
-      - -DOPTION_BUILD_WEBSITE_TOOLS=OFF
     build-options:
       ldflags: -lGL
     sources:
       # this is used for development versions:
       - type: git
         url: https://github.com/widelands/widelands.git
-        commit: 17705ed8390c7d6654ddc3aa6dcd1a1b80270d39
+        commit: 4bcc4e387183834ab062d6cfec608fa45f547628
 
       # for rc, use archive:
       # - type: archive

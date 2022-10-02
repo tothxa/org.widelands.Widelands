@@ -1,10 +1,11 @@
 app-id: org.widelands.Widelands
 default-branch: beta
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
-# segfaults on game start with 22.08
-# runtime-version: '22.08'
+runtime-version: '22.08'
 sdk: org.freedesktop.Sdk
+# SDK 22.08 has GCC 12.1 wich was a beta release, so we use clang instead
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.llvm14
 command: widelands
 desktop-file-name-suffix: ' (Beta)'
 tags:
@@ -54,14 +55,19 @@ modules:
         # This is needed to set the version string without
         # 'disable-shallow-clone: true'
         # (use utils/detect_revision.py in a complete git tree to get it)
-        WL_VERSION: 1.1~git25864 (b301eaa@master)
-        WL_RELEASE_DATE: 2022-09-03
+        WL_VERSION: 1.1~git25877 (40450cc@master)
+        WL_RELEASE_DATE: 2022-09-22
+
+        # Use clang instead of GCC
+        CC:  /usr/lib/sdk/llvm14/bin/clang
+        CXX: /usr/lib/sdk/llvm14/bin/clang++
+
       ldflags: -lGL
     sources:
       # Use this for development versions:
       - type: git
         url: https://github.com/widelands/widelands.git
-        commit: b301eaaafd793d95966af1bdf3480fae8bbcffee
+        commit: 40450cc8d7f01452bcadee370a1289fd5538d926
 
       # Use this for RC:
       # - type: archive
@@ -77,12 +83,13 @@ modules:
           # Modify xdg/org.widelands.Widelands.appdata.xml.stub:
           #  * Set version
           #  * Remove the binary from provides, because flatpak doesn't export it
-          echo "/<releases>/a" >appdata_stub.edcmd
-          echo "    <release date=\"${WL_RELEASE_DATE}\" version=\"${WL_VERSION}\"/>" >>appdata_stub.edcmd
-          echo "." >>appdata_stub.edcmd
-          echo "/<binary>/d" >>appdata_stub.edcmd
-          echo wq >>appdata_stub.edcmd
-          ed xdg/org.widelands.Widelands.appdata.xml.stub <appdata_stub.edcmd
+          ed xdg/org.widelands.Widelands.appdata.xml.stub <<EOF
+          /<releases>/a
+              <release date="${WL_RELEASE_DATE}" version="${WL_VERSION}"/>
+          .
+          /<binary>/d
+          wq
+          EOF
 
           # Regenerate appdata.xml with the changes
           utils/update_appdata.py

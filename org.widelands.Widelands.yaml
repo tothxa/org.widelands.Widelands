@@ -1,8 +1,11 @@
 app-id: org.widelands.Widelands
 default-branch: beta
 runtime: org.freedesktop.Platform
-runtime-version: '21.08'
+runtime-version: '22.08'
 sdk: org.freedesktop.Sdk
+# SDK 22.08 has GCC 12.1 wich was a beta release, so we use clang instead
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.llvm14
 command: widelands
 desktop-file-name-suffix: ' (Beta)'
 tags:
@@ -31,8 +34,8 @@ modules:
   - name: asio
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/asio/asio/1.20.0%20%28Stable%29/asio-1.20.0.tar.bz2
-        sha256: 204374d3cadff1b57a63f4c343cbadcee28374c072dc04b549d772dbba9f650c
+        url: https://downloads.sourceforge.net/project/asio/asio/1.24.0%20%28Stable%29/asio-1.24.0.tar.bz2
+        sha256: 8976812c24a118600f6fcf071a20606630a69afe4c0abee3b0dea528e682c585
     # This is to skip the 'make' step (building the examples), because
     # I couldn't figure out how to do it using the default buildsystem
     buildsystem: simple
@@ -52,14 +55,19 @@ modules:
         # This is needed to set the version string without
         # 'disable-shallow-clone: true'
         # (use utils/detect_revision.py in a complete git tree to get it)
-        WL_VERSION: 1.1~git25627[8275fa9@master]
-        WL_RELEASE_DATE: 2022-02-07
+        WL_VERSION: 1.1~git25877 (40450cc@master)
+        WL_RELEASE_DATE: 2022-09-22
+
+        # Use clang instead of GCC
+        CC:  /usr/lib/sdk/llvm14/bin/clang
+        CXX: /usr/lib/sdk/llvm14/bin/clang++
+
       ldflags: -lGL
     sources:
       # Use this for development versions:
       - type: git
         url: https://github.com/widelands/widelands.git
-        commit: 8275fa9b930927053bfe65fecf90acb75d469483
+        commit: 40450cc8d7f01452bcadee370a1289fd5538d926
 
       # Use this for RC:
       # - type: archive
@@ -75,12 +83,13 @@ modules:
           # Modify xdg/org.widelands.Widelands.appdata.xml.stub:
           #  * Set version
           #  * Remove the binary from provides, because flatpak doesn't export it
-          echo "/<releases>/a" >appdata_stub.edcmd
-          echo "    <release date=\"${WL_RELEASE_DATE}\" version=\"${WL_VERSION}\"/>" >>appdata_stub.edcmd
-          echo "." >>appdata_stub.edcmd
-          echo "/<binary>/d" >>appdata_stub.edcmd
-          echo wq >>appdata_stub.edcmd
-          ed xdg/org.widelands.Widelands.appdata.xml.stub <appdata_stub.edcmd
+          ed xdg/org.widelands.Widelands.appdata.xml.stub <<EOF
+          /<releases>/a
+              <release date="${WL_RELEASE_DATE}" version="${WL_VERSION}"/>
+          .
+          /<binary>/d
+          wq
+          EOF
 
           # Regenerate appdata.xml with the changes
           utils/update_appdata.py
@@ -90,7 +99,8 @@ modules:
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DOPTION_BUILD_WEBSITE_TOOLS=OFF
-      - -DCMAKE_INSTALL_PREFIX=/app/bin
+      - -DCMAKE_INSTALL_PREFIX=/app
+      - -DWL_INSTALL_BINDIR=/app/bin
       - -DWL_INSTALL_BASEDIR=/app/share/widelands
       - -DWL_INSTALL_DATADIR=/app/share/widelands
       - -DGLEW_ROOT=/app

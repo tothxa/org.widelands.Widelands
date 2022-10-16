@@ -1,11 +1,12 @@
 app-id: org.widelands.Widelands
 default-branch: beta
 runtime: org.freedesktop.Platform
-runtime-version: '22.08'
+# version 22.08 has too many problems for Widelands
+runtime-version: '21.08'
 sdk: org.freedesktop.Sdk
-# SDK 22.08 has GCC 12.1 wich was a beta release, so we use clang instead
-sdk-extensions:
-  - org.freedesktop.Sdk.Extension.llvm14
+# For compiling with clang:
+#sdk-extensions:
+#  - org.freedesktop.Sdk.Extension.llvm14
 command: widelands
 desktop-file-name-suffix: ' (Beta)'
 tags:
@@ -55,24 +56,24 @@ modules:
         # This is needed to set the version string without
         # 'disable-shallow-clone: true'
         # (use utils/detect_revision.py in a complete git tree to get it)
-        WL_VERSION: 1.1~git25877 (40450cc@master)
-        WL_RELEASE_DATE: 2022-09-22
+        WL_VERSION: 1.1~rc1
+        WL_RELEASE_DATE: 2022-10-16
 
         # Use clang instead of GCC
-        CC:  /usr/lib/sdk/llvm14/bin/clang
-        CXX: /usr/lib/sdk/llvm14/bin/clang++
+        #CC:  /usr/lib/sdk/llvm14/bin/clang
+        #CXX: /usr/lib/sdk/llvm14/bin/clang++
 
       ldflags: -lGL
     sources:
       # Use this for development versions:
-      - type: git
-        url: https://github.com/widelands/widelands.git
-        commit: 40450cc8d7f01452bcadee370a1289fd5538d926
+      # - type: git
+      #   url: https://github.com/widelands/widelands.git
+      #   commit: 40450cc8d7f01452bcadee370a1289fd5538d926
 
       # Use this for RC:
-      # - type: archive
-      #   url: https://github.com/widelands/widelands/archive/refs/tags/v1.0-rc1.tar.gz
-      #   sha256: e6e85c9daef451ab99cfbbfb9480eef6fddc51728d7283d13ae151d524293322
+      - type: archive
+        url: https://github.com/widelands/widelands/archive/refs/tags/v1.1-rc1.tar.gz
+        sha256: c949d5d03e468ff422e683af40aabedef4597197338463b5d83973c980819eff
 
       - type: shell
         commands:

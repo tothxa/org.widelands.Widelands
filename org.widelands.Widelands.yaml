@@ -52,11 +52,10 @@ modules:
   - name: Widelands
     build-options:
       env:
-        # This is needed to set the version string without
-        # 'disable-shallow-clone: true'
+        # This is needed to set the version string for development versions
+        # without 'disable-shallow-clone: true'
         # (use utils/detect_revision.py in a complete git tree to get it)
-        WL_VERSION: 1.2~git26360 (ddfa8b6@protected/navalwarfare)
-        WL_RELEASE_DATE: 2023-08-14
+        WL_VERSION: 1.2~git26395 (7b7b190@protected/navalwarfare)
 
         # Use clang instead of GCC
         #CC:  /usr/lib/sdk/llvm14/bin/clang
@@ -67,7 +66,7 @@ modules:
       # Use this for development versions:
       - type: git
         url: https://github.com/widelands/widelands.git
-        commit: ddfa8b64116201aa6a43e8cc11ad7e2acc449165
+        commit: 7b7b1902a1e92a8ba7257698015b000281445952
 
       # Use this for RC:
       # - type: archive
@@ -77,19 +76,31 @@ modules:
       - type: shell
         commands:
         - |
+          # Check versions in manifest
+          if [ "$(echo "$WL_VERSION" | sed -E 's/.*\(([0-9a-f]{7})@.*/\1/')" != \
+               "$(git show --abbrev=7 --no-patch --format='%h')" ]
+          then
+            echo "ERROR: Mismatch of commit hash and WL_VERSION in manifest!"
+            exit 1;
+          fi
+
           # Set version string
           echo "$WL_VERSION" >WL_RELEASE
+
+          # Get release date from git
+          WL_RELEASE_DATE="$(date --date="$(git show --no-patch --format='%cI')" --utc '+%Y-%m-%d')"
 
           # Modify xdg/org.widelands.Widelands.appdata.xml.stub:
           #  * Set version
           #  * Remove the binary from provides, because flatpak doesn't export it
-          ed xdg/org.widelands.Widelands.appdata.xml.stub <<EOF
-          /<releases>/a
+          cat >edit_appdata.sed <<EOF
+          /<releases>/a \\
               <release date="${WL_RELEASE_DATE}" version="${WL_VERSION}"/>
-          .
           /<binary>/d
-          wq
           EOF
+          sed -f edit_appdata.sed <xdg/org.widelands.Widelands.appdata.xml.stub >appdata.stub.edited
+          mv appdata.stub.edited xdg/org.widelands.Widelands.appdata.xml.stub
+          rm edit_appdata.sed
 
           # Regenerate appdata.xml with the changes
           utils/update_appdata.py

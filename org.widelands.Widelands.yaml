@@ -1,6 +1,6 @@
 app-id: org.widelands.Widelands
 runtime: org.freedesktop.Platform
-runtime-version: '23.08'
+runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: widelands
 finish-args:
@@ -27,8 +27,8 @@ modules:
   - name: asio
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/asio/asio/1.28.0%20%28Stable%29/asio-1.28.0.tar.bz2
-        sha256: d0ddc2361abd2f4c823e970aaf8e28b4b31ab21b1a68af16b114fc093661e232
+        url: https://downloads.sourceforge.net/project/asio/asio/1.30.2%20%28Stable%29/asio-1.30.2.tar.bz2
+        sha256: 9f12cef05c0477eace9c68ccabd19f9e3a04b875d4768c323714cbd3a5fa3c2b
     # This is to skip the 'make' step (building the examples), because
     # I couldn't figure out how to do it using the default buildsystem
     buildsystem: simple
@@ -45,8 +45,8 @@ modules:
   - name: Widelands
     sources:
       - type: archive
-        url: https://github.com/widelands/widelands/archive/refs/tags/v1.2.tar.gz
-        sha256: c6bed3717c541276fbed8a33adce230a2637297588c719268fcb963e076210e2
+        url: https://github.com/widelands/widelands/archive/refs/tags/v1.2.1.tar.gz
+        sha256: 799bfd32048ef20118c48e21f3fc843ae0451c42bb8bf2eabcb9b26bf6fe54b4
 
       - type: shell
         commands:
